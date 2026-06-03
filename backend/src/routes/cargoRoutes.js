@@ -6,7 +6,7 @@ const authenticateUser = require("../middleware/authMiddleware");
 const authorizeAdmin = require("../middleware/adminMiddleware");
 const upload = require("../middleware/uploadMiddleware");
 
-const { uploadManifest } = require("../controllers/cargoController");
+const { uploadManifest, getCargo } = require("../controllers/cargoController");
 
 router.post(
   "/upload",
@@ -15,5 +15,6 @@ router.post(
   upload.single("manifest"),
   uploadManifest
 );
+router.get("/cargo", authenticateUser, getCargo);
 
 module.exports = router;
