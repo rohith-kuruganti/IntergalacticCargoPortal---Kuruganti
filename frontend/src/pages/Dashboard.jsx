@@ -1,13 +1,19 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
+  const navigate = useNavigate();
   const [cargo, setCargo] = useState([]);
   const role = localStorage.getItem("role");
   const token = localStorage.getItem("token");
   const [file, setFile] = useState(null);
 
   useEffect(() => {
+    if (!token) {
+      navigate("/");
+      return;
+    }
     fetchCargo();
   }, []);
 
@@ -54,9 +60,17 @@ function Dashboard() {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+
+    window.location.href = "/";
+  };
+
   return (
     <div>
       <h1>Dashboard</h1>
+      <button onClick={handleLogout}>Logout</button>
       <h3>Role: {role}</h3>
       {role === "Admin" && (
         <div>
