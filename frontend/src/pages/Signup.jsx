@@ -23,12 +23,11 @@ function Signup() {
 
     try {
       await api.post("/auth/signup", formData);
-
       alert("Signup successful");
 
       navigate("/");
-    } catch (error) {
-      alert(error.response?.data?.message || "Signup failed");
+    } catch (err) {
+      alert(err.response?.data?.message || "Signup failed");
     }
   };
 

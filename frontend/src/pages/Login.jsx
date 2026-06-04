@@ -22,14 +22,12 @@ function Login() {
 
     try {
       const response = await api.post("/auth/login", formData);
-
       localStorage.setItem("token", response.data.token);
-
       localStorage.setItem("role", response.data.role);
 
       navigate("/dashboard");
-    } catch (error) {
-      alert(error.response?.data?.message || "Login failed");
+    } catch (err) {
+      alert(err.response?.data?.message || "Login failed");
     }
   };
 
