@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
+import { toast } from "react-toastify";
 
 function Login() {
   const navigate = useNavigate();
@@ -27,36 +28,52 @@ function Login() {
 
       navigate("/dashboard");
     } catch (err) {
-      alert(err.response?.data?.message || "Login failed");
+      toast.error(err.response?.data?.message || "Invalid email or password");
     }
   };
 
   return (
-    <div>
-      <h1>Login</h1>
+    <div className="auth-container">
+      <div className="auth-card">
+        <div className="auth-header">
+          <h1>Welcome Back 👋</h1>
 
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          onChange={handleChange}
-        />
+          <p>Sign in to manage your intergalactic cargo operations.</p>
+        </div>
 
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          onChange={handleChange}
-        />
+        <form className="auth-form" onSubmit={handleSubmit}>
+          <div className="input-group">
+            <label>Email</label>
 
-        <button type="submit">Login</button>
-      </form>
+            <input
+              type="email"
+              name="email"
+              placeholder="Enter your email"
+              onChange={handleChange}
+            />
+          </div>
 
-      <p>
-        Don't have an account?
-        <Link to="/signup"> Signup</Link>
-      </p>
+          <div className="input-group">
+            <label>Password</label>
+
+            <input
+              type="password"
+              name="password"
+              placeholder="Enter your password"
+              onChange={handleChange}
+            />
+          </div>
+
+          <button className="auth-btn" type="submit">
+            Login
+          </button>
+        </form>
+
+        <p className="auth-footer">
+          Don't have an account?
+          <Link to="/signup"> Sign Up</Link>
+        </p>
+      </div>
     </div>
   );
 }

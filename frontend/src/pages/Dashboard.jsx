@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import Navbar from "../components/Navbar";
+import HeroSection from "../components/HeroSection";
+import StatsContainer from "../components/StatsContainer";
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -8,6 +12,7 @@ function Dashboard() {
   const role = localStorage.getItem("role");
   const token = localStorage.getItem("token");
   const [file, setFile] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!token) {
@@ -40,23 +45,31 @@ function Dashboard() {
 
   const handleUpload = async () => {
     if (!file) {
-      alert("Please select a file");
+      toast.warning("Please select a file");
       return;
     }
+
     try {
+      setLoading(true);
+
       const formData = new FormData();
+
       formData.append("manifest", file);
+
       const response = await api.post("/upload", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
         },
       });
-      alert(response.data.message);
 
+      toast.success("Manifest uploaded successfully 🚀");
       fetchCargo();
-    } catch (err) {
-      alert(err.response?.data?.message || "Upload failed");
+      setFile(null);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Upload failed");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -64,45 +77,88 @@ function Dashboard() {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
 
-    window.location.href = "/";
+    toast.success("Logged out successfully 👋");
+
+    setTimeout(() => {
+      window.location.href = "/";
+    }, 1000);
   };
 
   return (
-    <div>
-      <h1>Dashboard</h1>
-      <button onClick={handleLogout}>Logout</button>
-      <h3>Role: {role}</h3>
-      {role === "Admin" && (
-        <div>
-          <h3>Upload File</h3>
-          <input type="file" onChange={(e) => setFile(e.target.files[0])} />
-          <button onClick={handleUpload}>Upload</button>
+    <div className="dashboard-container">
+      <Navbar role={role} handleLogout={handleLogout} />
+      <HeroSection />
+      <StatsContainer cargo={cargo} role={role} />
+
+      {/* Cargo Section */}
+      <div className="cargo-card">
+        <div className="cargo-header">
+          <div>
+            <h2>Cargo Manifest</h2>
+            <p>All intergalactic cargo shipments</p>
+          </div>
+
+          {role === "Admin" && (
+            <div className="upload-section">
+              <input type="file" onChange={(e) => setFile(e.target.files[0])} />
+              <button
+                className="upload-btn"
+                onClick={handleUpload}
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <span className="spinner"></span>
+                    Uploading...
+                  </>
+                ) : (
+                  "Upload"
+                )}
+              </button>
+            </div>
+          )}
         </div>
-      )}
 
-      <table border="1">
-        <thead>
-          <tr>
-            <th>Cargo ID</th>
-            <th>Destination</th>
-            <th>Weight</th>
-          </tr>
-        </thead>
+        {cargo.length === 0 ? (
+          <div className="empty-state">
+            <div className="empty-icon">📦</div>
 
-        <tbody>
-          {cargo.map((item) => (
-            <tr key={item._id}>
-              <td>{item.cargoId}</td>
-              <td>{item.destination}</td>
-              <td>
-                {role === "Admin"
-                  ? `${item.weight} KG`
-                  : `${(item.weight * 2.20462).toFixed(2)} LBS`}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+            <h3>No Cargo Records Found</h3>
+
+            <p>
+              Upload a manifest file to start managing intergalactic cargo
+              shipments.
+            </p>
+          </div>
+        ) : (
+          <table className="cargo-table">
+            <thead>
+              <tr>
+                <th>Cargo ID</th>
+                <th>Destination</th>
+                <th>Weight</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {cargo.map((item) => (
+                <tr
+                  key={item._id}
+                  className={item.destination === "Earth" ? "earth-row" : ""}
+                >
+                  <td>{item.cargoId}</td>
+                  <td>{item.destination}</td>
+                  <td>
+                    {role === "Admin"
+                      ? `${item.weight} KG`
+                      : `${(item.weight * 2.20462).toFixed(2)} LBS`}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
     </div>
   );
 }

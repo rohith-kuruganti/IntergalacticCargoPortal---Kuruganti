@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
+import { toast } from "react-toastify";
 
 function Signup() {
   const navigate = useNavigate();
@@ -23,47 +24,72 @@ function Signup() {
 
     try {
       await api.post("/auth/signup", formData);
-      alert("Signup successful");
-
-      navigate("/");
+      toast.success("Account created successfully 🚀");
+      setTimeout(() => {
+        navigate("/");
+      }, 1500);
     } catch (err) {
-      alert(err.response?.data?.message || "Signup failed");
+      toast.error(err.response?.data?.message || "Signup failed");
     }
   };
 
   return (
-    <div>
-      <h1>Signup</h1>
+    <div className="auth-container">
+      <div className="auth-card">
+        <div className="auth-header">
+          <div className="portal-badge">Intergalactic Cargo Portal</div>
 
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="name"
-          placeholder="Name"
-          onChange={handleChange}
-        />
+          <h1>Create Account 🚀</h1>
 
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          onChange={handleChange}
-        />
+          <p>
+            Join the portal and start managing intergalactic cargo operations.
+          </p>
+        </div>
 
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          onChange={handleChange}
-        />
+        <form className="auth-form" onSubmit={handleSubmit}>
+          <div className="input-group">
+            <label>Name</label>
 
-        <button type="submit">Signup</button>
-      </form>
+            <input
+              type="text"
+              name="name"
+              placeholder="Enter your name"
+              onChange={handleChange}
+            />
+          </div>
 
-      <p>
-        Already have an account?
-        <Link to="/"> Login</Link>
-      </p>
+          <div className="input-group">
+            <label>Email</label>
+
+            <input
+              type="email"
+              name="email"
+              placeholder="Enter your email"
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="input-group">
+            <label>Password</label>
+
+            <input
+              type="password"
+              name="password"
+              placeholder="Create a password"
+              onChange={handleChange}
+            />
+          </div>
+
+          <button className="auth-btn" type="submit">
+            Create Account
+          </button>
+        </form>
+
+        <p className="auth-footer">
+          Already have an account?
+          <Link to="/"> Login</Link>
+        </p>
+      </div>
     </div>
   );
 }
