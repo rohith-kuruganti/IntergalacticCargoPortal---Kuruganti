@@ -38,6 +38,14 @@ function Dashboard() {
 
       <h3>Role: {role}</h3>
 
+      {role === "Admin" && (
+        <div>
+          <h3>Upload File</h3>
+          <input type="file" id="manifestFile" />
+          <button>Upload</button>
+        </div>
+      )}
+
       <table border="1">
         <thead>
           <tr>
@@ -51,9 +59,7 @@ function Dashboard() {
           {cargo.map((item) => (
             <tr key={item._id}>
               <td>{item.cargoId}</td>
-
               <td>{item.destination}</td>
-
               <td>
                 {role === "Admin"
                   ? `${item.weight} KG`
