@@ -90,7 +90,6 @@ function Dashboard() {
       <HeroSection />
       <StatsContainer cargo={cargo} role={role} />
 
-      {/* Cargo Section */}
       <div className="cargo-card">
         <div className="cargo-header">
           <div>
